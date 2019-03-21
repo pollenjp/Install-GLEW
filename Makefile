@@ -16,8 +16,8 @@ TARGET := main
 # GLFW
 PKG_CONFIG_PATH := ${HOME}/.glfw/install/GLFW-${GLFW_VERSION}/lib/pkgconfig
 #=======================================
-# v3.2.1
-ifeq (${GLFW_VERSION}, 3.2.1)
+# v3.*
+ifneq ($(shell echo ${GLFW_VERSION} | grep -E "3\.[0-9]+\.[0-9]+"), )
 INC += `PKG_CONFIG_PATH=${PKG_CONFIG_PATH} pkg-config --cflags glfw3`
 # Select `static` or 'shared' OPENCV LIB 
 # --static : static library (.a)
@@ -39,8 +39,8 @@ endif
 # GLEW
 PKG_CONFIG_PATH := ${HOME}/.glew/install/GLEW-${GLEW_VERSION}/lib/pkgconfig
 #=======================================
-# v2.1.0
-ifeq (${GLEW_VERSION}, 2.1.0)
+# v2.*
+ifneq ($(shell echo ${GLEW_VERSION} | grep -E "2\.[0-9]+\.[0-9]+"), )
 INC += `PKG_CONFIG_PATH=${PKG_CONFIG_PATH} pkg-config --cflags glew`
 # Select `static` or 'shared' OPENCV LIB 
 # --static : static library (.a)
