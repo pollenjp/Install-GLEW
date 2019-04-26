@@ -19,7 +19,7 @@
 若干変わってるかも知れないが概ね以下のような感じ
 
 ```
- % make GLFW_VERSION=3.1.2 GLFW_LIB=static GLEW_VERSION=2.1.0 GLEW_LIB=static
+ % make GLFW_VERSION=3.1.2 GLFW_LIBS=static GLEW_VERSION=2.1.0 GLEW_LIBS=static
 make main
 make[1]: ディレクトリ '/media/pollenjp/DATA2TB/workdir/git/Install-GLEW' に入ります
 make[2]: ディレクトリ '/media/pollenjp/DATA2TB/workdir/git/Install-GLEW' に入ります

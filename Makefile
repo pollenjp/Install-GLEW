@@ -3,30 +3,47 @@ SHELL := /bin/bash
 GLFW_VERSION := 3.2.1
 GLEW_VERSION := 2.1.0
 # "static" or "shared"
-GLFW_LIB := static
-GLEW_LIB := static
+GLFW_LIBS := static
+GLEW_LIBS := static
 
-#===============================================================================
+CXX := g++
+CXXFLAGS = -g -Wall -std=c++11
+LINK.cc := $(CXX) $(CXXFLAGS) $(CPPFLAGS) ${LDFLAGS} $(TARGET_ARCH)
+
 INC :=
 LDLIBS  :=
 OBJECTS := $(patsubst %.cpp,%.o,$(wildcard *.cpp))
 TARGET := main
 
 #===============================================================================
+#===============================================================================
+#===============================================================================
+ifneq (${GLFW_LIBS}, static)
+ifneq (${GLFW_LIBS}, shared)
+$(error "'GLFW_LIBS' variable should be set. ('static' or 'shared')")
+endif
+endif
+ifneq (${GLEW_LIBS}, static)
+ifneq (${GLEW_LIBS}, shared)
+$(error "'GLEW_LIBS' variable should be set. ('static' or 'shared')")
+endif
+endif
+
+#===============================================================================
 # GLFW
-PKG_CONFIG_PATH := ${HOME}/.glfw/install/GLFW-${GLFW_VERSION}/lib/pkgconfig
+PKG_CONFIG_PATH := ${HOME}/.glfw/install/GLFW-${GLFW_VERSION}/${GLFW_LIBS}/lib/pkgconfig
 #=======================================
 # v3.*
 ifneq ($(shell echo ${GLFW_VERSION} | grep -E "3\.[0-9]+\.[0-9]+"), )
-INC += `PKG_CONFIG_PATH=${PKG_CONFIG_PATH} pkg-config --cflags glfw3`
+INC := ${INC} `PKG_CONFIG_PATH=${PKG_CONFIG_PATH} pkg-config --cflags glfw3`
 # Select `static` or 'shared' OPENCV LIB 
 # --static : static library (.a)
-ifeq (${GLFW_LIB}, shared)
-LDLIBS += `PKG_CONFIG_PATH=${PKG_CONFIG_PATH} pkg-config --libs glfw3`
-else ifeq (${GLFW_LIB}, static)
-LDLIBS += `PKG_CONFIG_PATH=${PKG_CONFIG_PATH} pkg-config --static --libs glfw3`
+ifeq (${GLFW_LIBS}, shared)
+LDLIBS := ${LDLIBS} `PKG_CONFIG_PATH=${PKG_CONFIG_PATH} pkg-config --libs glfw3`
+else ifeq (${GLFW_LIBS}, static)
+LDLIBS := ${LDLIBS} `PKG_CONFIG_PATH=${PKG_CONFIG_PATH} pkg-config --static --libs glfw3`
 else
-ERROR_MESSAGE := 'GLFW_LIB' variable should be 'static' or 'shared'.
+ERROR_MESSAGE := 'GLFW_LIBS' variable should be 'static' or 'shared'.
 $(error "${ERROR_MESSAGE}")
 endif
 #=======================================
@@ -37,19 +54,19 @@ $(error "${ERROR_MESSAGE}")
 endif
 #===============================================================================
 # GLEW
-PKG_CONFIG_PATH := ${HOME}/.glew/install/GLEW-${GLEW_VERSION}/lib/pkgconfig
+PKG_CONFIG_PATH := ${HOME}/.glew/install/GLEW-${GLEW_VERSION}/${GLEW_LIBS}/lib/pkgconfig
 #=======================================
 # v2.*
 ifneq ($(shell echo ${GLEW_VERSION} | grep -E "2\.[0-9]+\.[0-9]+"), )
-INC += `PKG_CONFIG_PATH=${PKG_CONFIG_PATH} pkg-config --cflags glew`
+INC := ${INC} `PKG_CONFIG_PATH=${PKG_CONFIG_PATH} pkg-config --cflags glew`
 # Select `static` or 'shared' OPENCV LIB 
 # --static : static library (.a)
-ifeq (${GLEW_LIB}, shared)
-LDLIBS += `PKG_CONFIG_PATH=${PKG_CONFIG_PATH} pkg-config --libs glew`
-else ifeq (${GLEW_LIB}, static)
-LDLIBS += `PKG_CONFIG_PATH=${PKG_CONFIG_PATH} pkg-config --static --libs glew`
+ifeq (${GLEW_LIBS}, shared)
+LDLIBS := ${LDLIBS} `PKG_CONFIG_PATH=${PKG_CONFIG_PATH} pkg-config --libs glew`
+else ifeq (${GLEW_LIBS}, static)
+LDLIBS := ${LDLIBS} `PKG_CONFIG_PATH=${PKG_CONFIG_PATH} pkg-config --static --libs glew`
 else
-ERROR_MESSAGE := 'GLEW_LIB' variable should be 'static' or 'shared'.
+ERROR_MESSAGE := 'GLEW_LIBS' variable should be 'static' or 'shared'.
 $(error "${ERROR_MESSAGE}")
 endif
 #=======================================
@@ -59,10 +76,6 @@ ERROR_MESSAGE := 'GLEW_VERSION' variable (${GLEW_VERSION}) is not supported.
 $(error "${ERROR_MESSAGE}")
 endif
 
-#===============================================================================
-CXX := g++
-CXXFLAGS = -g -Wall -std=c++11
-LINK.cc := $(CXX) $(CXXFLAGS) $(CPPFLAGS) ${LDFLAGS} $(TARGET_ARCH)
 export
 
 #===============================================================================
@@ -112,6 +125,6 @@ clean :
 .PHONY : install-glew
 install-glew :
 	@$(MAKE) preprocess
-	GLEW_VERSION=${GLEW_VERSION} ./install-glew.bash.sh
+	GLEW_VERSION=${GLEW_VERSION} GLEW_LIBS=${GLEW_LIBS} ./install-glew.bash.sh
 
 
